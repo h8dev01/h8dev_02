@@ -41,7 +41,7 @@ $(foreach aa1,$(SRCS),$(eval dst/$(aa1:.c=.o) : $(aa1) $(EOL)	$(gcc) $(cOPT) -c 
 dst/h8led.mot: dst/h8led.exe
 	$(objcopy) -O srec $^ $@
 	$(objcopy) -I srec -O binary $@ $@.bin
-	cat $@.bin |hexdump -C -v > $@.bin.txt
+	cat $@.bin |hexdump -C -v > $@.bin.hex.txt
 
 
 dst/h8led.exe:  Makefile $(LDSCRIPT) $(objS) $(CRT0) $(ASRCS) $(LIBS)
@@ -49,12 +49,12 @@ dst/h8led.exe:  Makefile $(LDSCRIPT) $(objS) $(CRT0) $(ASRCS) $(LIBS)
 #	$(TOOL_PREFIX)gcc $(CFLAGS) -T $(LDSCRIPT) -nostdlib $(CRT0) $(ASRCS) $(objS) -o $@ $(LIBS) -lc -lgcc
 	$(TOOL_PREFIX)gcc $(CFLAGS) -T $(LDSCRIPT) -nostdlib $(CRT0) $(ASRCS) $(objS) -o $@ $(LIBS) 
 
-asmOPT11:=		-Wa,-adhln -g 
-asmOPT12:=		-g -Wa,-a,-ad 
-asmOPT21:=		-g -Wa,-aln=sss/aaa.21.s
-asmOPT22:=		-g -Wa,-alndh=sss/aaa.22.s
-asmOPT23:=		-g -Wa,-alnh=sss/aaa.23.s
-asmOPT31:=		-g -Wa,-alnh=sss/aaa.31.s -save-temps 
+asmOPT11:=		-fverbose-asm -Wa,-adhln -g 
+asmOPT12:=		-fverbose-asm -g -Wa,-a,-ad 
+asmOPT21:=		-fverbose-asm -g -Wa,-aln=sss/aaa.21.s
+asmOPT22:=		-fverbose-asm -g -Wa,-alndh=sss/aaa.22.s
+asmOPT23:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.23.s
+asmOPT31:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.31.s -save-temps 
 
 s asm: asm.h8led_exe
 asm.h8led_exe:
@@ -62,15 +62,24 @@ asm.h8led_exe:
 	$(foreach aa1,11 12, \
 		$(gcc) $(asmOPT$(aa1)) \
 		$(cOPT)    $(CRT0) $(ASRCS) $(SRCS)       \
-		-o sss/bbb.coff.$(aa1) $(LIBS) > sss/ccc.$(aa1).lst $(EOL)\
-		cat sss/bbb.coff.$(aa1) |hexdump -C -v > sss/bbb.coff.$(aa1).txt $(EOL)\
+		-o sss/bbb.coff.$(aa1).coff $(LIBS) > sss/ccc.$(aa1).lst $(EOL) \
+		\
+		cat sss/bbb.coff.$(aa1).coff |hexdump -C -v > sss/bbb.coff.$(aa1).coff.hex.txt $(EOL)\
+		\
+		$(objcopy) -O binary sss/bbb.coff.$(aa1).coff sss/ddd.coff.$(aa1).bin $(EOL) \
+		\
+		cat sss/ddd.coff.$(aa1).bin |hexdump -C -v > sss/ddd.coff.$(aa1).bin.hex.txt $(EOL)\
 		)
 	$(foreach aa1,21 22 23 24, \
 		$(gcc) $(asmOPT$(aa1)) \
 		$(cOPT)    $(CRT0) $(ASRCS) $(SRCS)       \
-		-o sss/bbb.coff.$(aa1) $(LIBS) > sss/ccc.$(aa1).lst $(EOL)\
-		cat sss/bbb.coff.$(aa1) |hexdump -C -v > sss/bbb.coff.$(aa1).txt $(EOL)\
-		$(objcopy) -O binary $@ $@.bin
+		-o sss/bbb.coff.$(aa1).coff $(LIBS) > sss/ccc.$(aa1).lst $(EOL)\
+		\
+		cat sss/bbb.coff.$(aa1).coff |hexdump -C -v > sss/bbb.coff.$(aa1).coff.hex.txt $(EOL)\
+		\
+		$(objcopy) -O binary sss/bbb.coff.$(aa1).coff sss/ddd.coff.$(aa1).bin $(EOL) \
+		\
+		cat sss/ddd.coff.$(aa1).bin |hexdump -C -v > sss/ddd.coff.$(aa1).bin.hex.txt $(EOL)\
 		)
 
 tar:
@@ -83,11 +92,12 @@ clean :
 		dst/*.o \
 		dst/*.s \
 		dst/*.mot \
-		dst/*.mot.bin \
-		dst/*.mot.bin.txt \
+		dst/*.bin \
+		dst/*.bin.txt \
 		sss/aaa.* \
 		sss/bbb.* \
 		sss/ccc.* \
+		sss/ddd.* \
 		)
 
 
