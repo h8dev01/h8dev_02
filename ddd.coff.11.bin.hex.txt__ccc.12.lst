@@ -1,0 +1,159 @@
+Renesas H8/300 GAS  /tmp/ccpAHOs6.s 			page 1
+
+
+   1              	# 1 "3664crt0.S"
+   2              	# 1 "/home/bootH/vm3/VMs/topVM/VM.jg1/virtFS.jg1/r5h30211/h8dev_02//"
+   1:/home/bootH/vm3/VMs/topVM/VM.jg1/virtFS.jg1/r5h30211/h8dev_02// **** ...
+   1              	;	H8/3664 Startup file
+   0:<built-in>    **** 
+   0:<command line> **** 
+   2              	
+   3              		.h8300h
+   4              		.section .text
+   5              		.global	_start
+   6              	_start:
+   7 0000 7A070000 		mov.l	#__stack,sp
+   7      0000
+   8              	
+   9 0006 7A000000 		mov.l	#___dtors_end,er0
+   9      0000
+  10 000c 7A010000 		mov.l	#___data,er1
+  10      0000
+  11 0012 7A020000 		mov.l	#_edata,er2
+  11      0000
+  12              	1:
+  13 0018 6903     		mov.w	@er0,r3
+  14 001a 6993     		mov.w	r3,@er1
+  15 001c 0B80     		adds	#2,er0
+  16 001e 0B81     		adds	#2,er1
+  17 0020 1FA1     		cmp.l	er2,er1
+  18 0022 4500     		blo	1b
+  19              	1:
+  20 0024 5E000000 		jsr	@_main
+  21 0028 4000     		bra	1b
+  22              	
+  23              		.section .stack
+  24              	__stack:
+Renesas H8/300 GAS  /tmp/ccpAHOs6.s 			page 2
+
+
+DEFINED SYMBOLS
+          3664crt0.S:24     e3:000000000000002a __stack
+                               e0:0000000000000000 .text
+                               e1:000000000000002a .data
+                               e2:000000000000002a .bss
+                               e3:000000000000002a .stack
+          3664crt0.S:6      e0:0000000000000000 _start
+
+UNDEFINED SYMBOLS
+___dtors_end
+___data
+_edata
+_main
+Renesas H8/300 GAS  /tmp/ccpAHOs6.s 			page 1
+
+
+   1              		.file	"led.c"
+   2              		.h8300h
+   3              		.section .text
+   4              		.align 1
+  10              		.global _int_timera
+  11              	_int_timera:
+   1:led.c         **** /*
+   2:led.c         ****  *	H8/3664F Sample Program
+   3:led.c         ****  *	Copyright (c) 2001 Masahiro Ochiai
+   4:led.c         ****  */
+   5:led.c         **** 
+   6:led.c         **** #include "3664.h"
+   7:led.c         **** 
+   8:led.c         **** 
+   9:led.c         **** #pragma interrupt
+  10:led.c         **** void int_timera(void)
+  11:led.c         **** {
+  17 0000 01006DF6 		mov.l	er6,@-er7	;#,
+  18 0004 0FF6     		mov.l	er7,er6	;#,
+  19 0006 01006DF2 		mov.l	er2,@-er7	;#,
+  20 000a 01006DF3 		mov.l	er3,@-er7	;#,
+  12:led.c         **** 	IRR1 &= ~0x60;
+  22 000e 7A030000 		mov.l	#65526,er3	;#, tmp16
+  22      FFF6
+  23 0014 683A     		mov.b	@er3,r2l	;#, tmp19
+  24 0016 EA9F     		and	#-97,r2l	;#, tmp20
+  25 0018 68BA     		mov.b	r2l,@er3	;# tmp20,
+  13:led.c         **** 
+  14:led.c         **** 	PDR1 = ~PDR1;		/* Invert PDR1 */
+  27 001a FBD4     		mov.b	#-44,r3l	;#,
+  28 001c 683A     		mov.b	@er3,r2l	;#, tmp24
+  29 001e 170A     		not	r2l	;# tmp23
+  30 0020 68BA     		mov.b	r2l,@er3	;# tmp23,
+  15:led.c         **** }
+  32 0022 01006D73 		mov.l	@er7+,er3	;#,
+  33 0026 01006D72 		mov.l	@er7+,er2	;#,
+  34 002a 01006D76 		mov.l	@er7+,er6	;#,
+  35 002e 5670     		rte
+  45              		.align 1
+  51              		.global _main
+  52              	_main:
+  16:led.c         **** 
+  17:led.c         **** 
+  18:led.c         **** 
+  19:led.c         **** int main()
+  20:led.c         **** {
+  58 0030 01006DF6 		mov.l	er6,@-er7	;#,
+  59 0034 0FF6     		mov.l	er7,er6	;#,
+  21:led.c         **** 	PMR1 = 0x00;
+  61 0036 18BB     		sub.b	r3l,r3l	;# tmp18
+  62 0038 6AAB0000 		mov.b	r3l,@65504	;# tmp18,
+  62      FFE0
+  22:led.c         **** 	PCR1 = 0xff;		/* Set Output Pin for P1x */
+  64 003e FAFF     		mov.b	#-1,r2l	;#, tmp20
+  65 0040 6AAA0000 		mov.b	r2l,@65508	;# tmp20,
+  65      FFE4
+  23:led.c         **** 	PDR1 = 0x00;		/* Output 0 to P1x */
+Renesas H8/300 GAS  /tmp/ccpAHOs6.s 			page 2
+
+
+  67 0046 6AAB0000 		mov.b	r3l,@65492	;# tmp18,
+  67      FFD4
+  24:led.c         **** 
+  25:led.c         **** 	TMA = 0x99;
+  69 004c FA99     		mov.b	#-103,r2l	;#, tmp24
+  70 004e 6AAA0000 		mov.b	r2l,@65446	;# tmp24,
+  70      FFA6
+  26:led.c         **** 	
+  27:led.c         **** 	IENR1 |= 0x40;		/* Enable timer-A interrupt */
+  72 0054 7A030000 		mov.l	#65524,er3	;#, tmp25
+  72      FFF4
+  73 005a 683A     		mov.b	@er3,r2l	;#, tmp28
+  74 005c CA40     		or	#64,r2l	;#, tmp27
+  75 005e 68BA     		mov.b	r2l,@er3	;# tmp27,
+  28:led.c         **** 
+  29:led.c         **** 	STI();				/* CPU permit interrupts */
+  77              	; #APP
+  78 0060 067F     		andc.b #0x7f,ccr
+  79              	; #NO_APP
+  80              	.L3:
+  30:led.c         **** 
+  31:led.c         **** 	while(1){
+  32:led.c         **** 		SLEEP();
+  82              	; #APP
+  83 0062 0180     		sleep
+  84              	; #NO_APP
+  85 0064 4000     		bra	.L3	;#
+  95              		.end
+Renesas H8/300 GAS  /tmp/ccpAHOs6.s 			page 3
+
+
+DEFINED SYMBOLS
+     /tmp/ccpAHOs6.s:11     e0:0000000000000000 _int_timera
+     /tmp/ccpAHOs6.s:16     e0:0000000000000000 .bf
+     /tmp/ccpAHOs6.s:40     e0:0000000000000030 .ef
+     /tmp/ccpAHOs6.s:52     e0:0000000000000030 _main
+     /tmp/ccpAHOs6.s:57     e0:0000000000000030 .bf
+     /tmp/ccpAHOs6.s:80     e0:0000000000000062 .L3
+     /tmp/ccpAHOs6.s:90     e0:0000000000000066 .ef
+                               e0:0000000000000000 .text
+                               e1:0000000000000066 .data
+                               e2:0000000000000066 .bss
+
+NO UNDEFINED SYMBOLS
