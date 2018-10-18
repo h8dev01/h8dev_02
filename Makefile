@@ -49,8 +49,22 @@ dst/h8led.exe:  Makefile $(LDSCRIPT) $(objS) $(CRT0) $(ASRCS) $(LIBS)
 #	$(TOOL_PREFIX)gcc $(CFLAGS) -T $(LDSCRIPT) -nostdlib $(CRT0) $(ASRCS) $(objS) -o $@ $(LIBS) -lc -lgcc
 	$(TOOL_PREFIX)gcc $(CFLAGS) -T $(LDSCRIPT) -nostdlib $(CRT0) $(ASRCS) $(objS) -o $@ $(LIBS) 
 
+#
+# $ gcc -Wa,-adhln -g source_code.c > assembly_list.s
+# The options:
+# 
+# -g: Produce debugging information
+# -Wa,option: Pass option as an option to the assembler
+# -adhln:
+# a: turn on listings
+# d: omit debugging directives; n: omit forms processing
+# h: include high-level source
+# l: include assembly
+#
+
 asmOPT11:=		-fverbose-asm -Wa,-adhln -g 
 asmOPT12:=		-fverbose-asm -g -Wa,-a,-ad 
+asmOPT13:=		-fverbose-asm -g -Wa,-adhln 
 asmOPT21:=		-fverbose-asm -g -Wa,-aln=sss/aaa.21.s
 asmOPT22:=		-fverbose-asm -g -Wa,-alndh=sss/aaa.22.s
 asmOPT23:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.23.s
@@ -59,7 +73,7 @@ asmOPT31:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.31.s -save-temps
 s asm: asm.h8led_exe
 asm.h8led_exe:
 	mkdir -p sss
-	$(foreach aa1,11 12, \
+	$(foreach aa1,11 12 13, \
 		$(gcc) $(asmOPT$(aa1)) \
 		$(cOPT)    $(CRT0) $(ASRCS) $(SRCS)       \
 		-o sss/bbb.coff.$(aa1).coff $(LIBS) > sss/ccc.$(aa1).lst $(EOL) \
