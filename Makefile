@@ -101,3 +101,5 @@ gc :
 	git commit -a
 gd:
 	git diff
+up gu:
+	git push -u origin master
