@@ -94,3 +94,10 @@ clean :
 c:clean
 m:
 	vim Makefile
+
+gs :
+	git status
+gc :
+	git commit -a
+gd:
+	git diff
