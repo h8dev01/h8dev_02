@@ -15,14 +15,26 @@ TARGET		=	dst/h8led.mot
 
 CFLAGS		=	-O -mh -g -mrelax -mint32 -DH8_3664
 
+#old_hms_gcc:=111111
+
+ifdef old_hms_gcc
 TOOL_PREFIX	=	h8300-hms-
+TOOL_PREFIX	=	/usr/bin/h8300-hitachi-coff-
+LDSCRIPT	=	h8-3664.x
+CRT0		=	3664crt0.S
+else
+TOOL_PREFIX	=	/home/bootH/vm3/VMs/topVM/VM.jg1/virtFS.jg1/r5h30211/gnuh8300_v12.02_elf-1-1.i386.rpm__/usr/share/gnuh8300_v12.02_elf-1/bin/h8300-elf-
+TOOL_PREFIX	=	/home/bootH/bin/h8300-elf-
+LDSCRIPT	=	h8300hnelf.x
+CRT0		=	h8300hCrt0.S
+endif
 
 CC			=	$(TOOL_PREFIX)gcc
 AS			=	$(TOOL_PREFIX)as
 LD			=	$(TOOL_PREFIX)ld
 
-LDSCRIPT	=	h8-3664.x
-CRT0		=	3664crt0.S
+
+
 ASRCS		=	
 SRCS		=	led.c
 objS		:=	$(foreach aa1,$(SRCS:.c=.o),dst/$(aa1))
@@ -30,6 +42,7 @@ objS		:=	$(foreach aa1,$(SRCS:.c=.o),dst/$(aa1))
 
 gcc:=$(TOOL_PREFIX)gcc
 objcopy:=$(TOOL_PREFIX)objcopy 
+objdump:=$(TOOL_PREFIX)objdump
 cOPT:= $(CFLAGS) -T $(LDSCRIPT) -nostdlib 
 
 #	make all source trees
@@ -127,3 +140,6 @@ gd:
 	git diff
 up gu:
 	git push -u origin master
+
+fm format :
+	$(objdump) -i
