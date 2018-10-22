@@ -83,7 +83,7 @@ asmOPT22:=		-fverbose-asm -g -Wa,-alndh=sss/aaa.22.s
 asmOPT23:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.23.s
 asmOPT31:=		-fverbose-asm -g -Wa,-alnh=sss/aaa.31.s -save-temps 
 
-s asm: asm.h8led_exe
+s asm sss : asm.h8led_exe
 asm.h8led_exe:
 	mkdir -p sss
 	$(foreach aa1,11 12 13, \
