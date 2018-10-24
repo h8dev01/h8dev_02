@@ -45,9 +45,11 @@ objcopy:=$(TOOL_PREFIX)objcopy
 objdump:=$(TOOL_PREFIX)objdump
 cOPT:= $(CFLAGS) -T $(LDSCRIPT) -nostdlib 
 
-#	make all source trees
-all : $(TARGET)
+all : 
+	@echo ; echo "$${help_text}" ; echo 
 
+#	make all source trees
+n nnn normal : clean $(TARGET)
 
 $(foreach aa1,$(SRCS),$(eval dst/$(aa1:.c=.o) : $(aa1) $(EOL)	$(gcc) $(cOPT) -c $$^ -o $$@ ))
 
@@ -143,3 +145,12 @@ up gu:
 
 fm format :
 	$(objdump) -i
+
+define help_text
+	fm           : show obj format
+	s asm sss    : build asm.h8led_exe using the origin mothed
+	n nnn normal : build c use origin Makefile : $(TARGET)
+
+endef
+export help_text
+
